@@ -41,18 +41,14 @@ int main(int argc, char *argv[])
 
     if (!net1.contains("/") || !net2.contains("/"))
     {
-        qWarning("Invalid format");
+        qWarning("Missing channel");
         return 2;
     }
 
-    QStringList inputs = net1.split("/");
     RelayBot* relay_bot = new RelayBot();
-    relay_bot->Network1 = inputs[0];
-    relay_bot->Channel1 = inputs[1];
+    relay_bot->Network1 = net1;
     relay_bot->Nick = argv[1];
-    inputs = net2.split("/");
-    relay_bot->Network2 = inputs[0];
-    relay_bot->Channel2 = inputs[1];
+    relay_bot->Network2 = net2;
     QTimer::singleShot(0, relay_bot, SLOT(Main()));
     return a.exec();
 }

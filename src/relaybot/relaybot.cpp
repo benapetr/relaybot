@@ -28,43 +28,27 @@ void RelayBot::Log(QString text)
 
 void RelayBot::Main()
 {
-    Log("Connecting to " + this->Network1);
-    libirc::ServerAddress network_address_1(this->Network1, false, 6667, this->Nick);
-    this->net1 = new libircclient::Network(network_address_1, this->Network1);
+    libirc::ServerAddress network_address_1(this->Network1);
+    network_address_1.SetNick(this->Nick);
+    this->Channel1 = network_address_1.GetSuffix();
+    libirc::ServerAddress network_address_2(this->Network2);
+    network_address_2.SetNick(this->Nick);
+    this->Channel2 = network_address_2.GetSuffix();
+
+    Log("Connecting to " + network_address_1.GetHost());
+    this->net1 = new libircclient::Network(network_address_1, network_address_1.GetHost());
     this->net1->SetDefaultUsername("Relay Bot");
-    //connect(this->net1, SIGNAL(Event_RawIncoming(QByteArray)), this, SLOT(DebugIn(QByteArray)));
-    connect(this->net1, SIGNAL(Event_ISUPPORT(libircclient::Parser*)), this, SLOT(Finished_Join1(libircclient::Parser*)));
     this->net1->Connect();
-    connect(this->net1, SIGNAL(Event_PRIVMSG(libircclient::Parser*)), this, SLOT(text1(libircclient::Parser*)));
-    Log("Connecting to " + this->Network2);
-    libirc::ServerAddress network_address_2(this->Network2, false, 6667, this->Nick);
-    this->net2 = new libircclient::Network(network_address_2, this->Network2);
-    connect(this->net2, SIGNAL(Event_ISUPPORT(libircclient::Parser*)), this, SLOT(Finished_Join2(libircclient::Parser*)));
+
+    Log("Connecting to " + network_address_2.GetHost());
+    this->net2 = new libircclient::Network(network_address_2, network_address_2.GetHost());
     this->net2->SetDefaultUsername("Relay Bot");
     this->net2->Connect();
+
+    connect(this->net1, SIGNAL(Event_PRIVMSG(libircclient::Parser*)), this, SLOT(text1(libircclient::Parser*)));
     connect(this->net2, SIGNAL(Event_PRIVMSG(libircclient::Parser*)), this, SLOT(text2(libircclient::Parser*)));
     connect(this->net1, SIGNAL(Event_CTCP(libircclient::Parser*,QString,QString)), this, SLOT(mis1(libircclient::Parser*,QString, QString)));
     connect(this->net2, SIGNAL(Event_CTCP(libircclient::Parser*,QString,QString)), this, SLOT(mis2(libircclient::Parser*,QString, QString)));
-}
-
-void RelayBot::Finished_Join1(libircclient::Parser *parser)
-{
-    this->net1->RequestJoin(this->Channel1);
-}
-
-void RelayBot::Finished_Join2(libircclient::Parser *parser)
-{
-    this->net2->RequestJoin(this->Channel2);
-}
-
-void RelayBot::DebugIn(QByteArray data)
-{
-    Log(QString(data));
-}
-
-void RelayBot::DebugOut(QByteArray data)
-{
-    Log(QString(data));
 }
 
 void RelayBot::text1(libircclient::Parser *px)

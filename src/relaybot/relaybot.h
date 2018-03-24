@@ -30,10 +30,6 @@ class RelayBot : public QObject
 
     public slots:
         void Main();
-        void Finished_Join1(libircclient::Parser *parser);
-        void Finished_Join2(libircclient::Parser *parser);
-        void DebugIn(QByteArray data);
-        void DebugOut(QByteArray data);
         void text1(libircclient::Parser *px);
         void text2(libircclient::Parser *px);
         void mis1(libircclient::Parser *px, QString type, QString pars);
