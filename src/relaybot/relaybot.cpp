@@ -43,6 +43,8 @@ void RelayBot::Main()
     this->net2->SetDefaultUsername("Relay Bot");
     this->net2->Connect();
     connect(this->net2, SIGNAL(Event_PRIVMSG(libircclient::Parser*)), this, SLOT(text2(libircclient::Parser*)));
+    connect(this->net1, SIGNAL(Event_CTCP(libircclient::Parser*,QString,QString)), this, SLOT(mis1(libircclient::Parser*,QString, QString)));
+    connect(this->net2, SIGNAL(Event_CTCP(libircclient::Parser*,QString,QString)), this, SLOT(mis2(libircclient::Parser*,QString, QString)));
 }
 
 void RelayBot::Finished_Join1(libircclient::Parser *parser)
@@ -73,4 +75,16 @@ void RelayBot::text1(libircclient::Parser *px)
 void RelayBot::text2(libircclient::Parser *px)
 {
     this->net1->SendMessage("<" + px->GetSourceUserInfo()->GetNick() + "@" + this->net2->GetNetworkName() + "> " + px->GetText(), px->GetParameterLine());
+}
+
+void RelayBot::mis1(libircclient::Parser *px, QString type, QString pars)
+{
+    if (type == "ACTION")
+        this->net2->SendMessage("* " + px->GetSourceUserInfo()->GetNick() + "@" + this->net1->GetNetworkName() + " " + pars, px->GetParameterLine());
+}
+
+void RelayBot::mis2(libircclient::Parser *px, QString type, QString pars)
+{
+    if (type == "ACTION")
+        this->net1->SendMessage("* " + px->GetSourceUserInfo()->GetNick() + "@" + this->net2->GetNetworkName() + " " + pars, px->GetParameterLine());
 }

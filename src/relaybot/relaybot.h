@@ -36,6 +36,8 @@ class RelayBot : public QObject
         void DebugOut(QByteArray data);
         void text1(libircclient::Parser *px);
         void text2(libircclient::Parser *px);
+        void mis1(libircclient::Parser *px, QString type, QString pars);
+        void mis2(libircclient::Parser *px, QString type, QString pars);
 
     protected:
         libircclient::Network *net1;
