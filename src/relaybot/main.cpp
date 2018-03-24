@@ -10,6 +10,7 @@
 
 // Copyright (c) Petr Bena 2018
 
+#include <QStringList>
 #include <QCoreApplication>
 #include <QTimer>
 #include "relaybot.h"

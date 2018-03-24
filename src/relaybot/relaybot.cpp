@@ -31,6 +31,7 @@ void RelayBot::Main()
     Log("Connecting to " + this->Network1);
     libirc::ServerAddress network_address_1(this->Network1, false, 6667, this->Nick);
     this->net1 = new libircclient::Network(network_address_1, this->Network1);
+    this->net1->SetDefaultUsername("Relay Bot");
     //connect(this->net1, SIGNAL(Event_RawIncoming(QByteArray)), this, SLOT(DebugIn(QByteArray)));
     connect(this->net1, SIGNAL(Event_ISUPPORT(libircclient::Parser*)), this, SLOT(Finished_Join1(libircclient::Parser*)));
     this->net1->Connect();
@@ -39,6 +40,7 @@ void RelayBot::Main()
     libirc::ServerAddress network_address_2(this->Network2, false, 6667, this->Nick);
     this->net2 = new libircclient::Network(network_address_2, this->Network2);
     connect(this->net2, SIGNAL(Event_ISUPPORT(libircclient::Parser*)), this, SLOT(Finished_Join2(libircclient::Parser*)));
+    this->net2->SetDefaultUsername("Relay Bot");
     this->net2->Connect();
     connect(this->net2, SIGNAL(Event_PRIVMSG(libircclient::Parser*)), this, SLOT(text2(libircclient::Parser*)));
 }
@@ -65,10 +67,10 @@ void RelayBot::DebugOut(QByteArray data)
 
 void RelayBot::text1(libircclient::Parser *px)
 {
-    this->net2->SendMessage("<" + px->GetSourceUserInfo()->GetNick() + "@" + this->net2->GetNetworkName() + "> " + px->GetText(), px->GetParameterLine());
+    this->net2->SendMessage("<" + px->GetSourceUserInfo()->GetNick() + "@" + this->net1->GetNetworkName() + "> " + px->GetText(), px->GetParameterLine());
 }
 
 void RelayBot::text2(libircclient::Parser *px)
 {
-    this->net1->SendMessage("<" + px->GetSourceUserInfo()->GetNick() + "@" + this->net1->GetNetworkName() + "> " + px->GetText(), px->GetParameterLine());
+    this->net1->SendMessage("<" + px->GetSourceUserInfo()->GetNick() + "@" + this->net2->GetNetworkName() + "> " + px->GetText(), px->GetParameterLine());
 }
