@@ -1,0 +1,40 @@
+PROJECT(relaybot)
+
+SET(QT_USE_QTNETWORK TRUE)
+SET(CMAKE_BUILD_TYPE Release)
+SET(CMAKE_AUTOMOC ON)
+
+if(QT5_BUILD)
+  find_package(Qt5Core REQUIRED)
+  find_package(Qt5Network REQUIRED)
+  set(QT_INCLUDES ${Qt5Network_INCLUDE_DIRS})
+  include_directories(${QT_INCLUDES})
+else()
+  find_package(Qt4 REQUIRED)
+endif()
+
+file (GLOB headers "*.h")
+file (GLOB src "*.cpp")
+file (GLOB resources "*.qrc")
+
+if(QT5_BUILD)
+    QT5_WRAP_CPP(relaybot_HEADERS_MOC ${relaybot_HEADERS})
+    QT5_ADD_RESOURCES(relaybot_RESOURCES_RCC ${resources})
+else()
+    QT4_WRAP_CPP(relaybot_HEADERS_MOC ${irc_HEADERS})
+    QT4_ADD_RESOURCES(relaybot_RESOURCES_RCC ${resources})
+endif()
+
+if (NOT QT5_BUILD)
+  INCLUDE(${QT_USE_FILE})
+endif()
+
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+ADD_DEFINITIONS( -DQT_USE_QSTRINGBUILDER )
+
+ADD_EXECUTABLE(relaybot ${src} ${relaybot_HEADERS_MOC} ${headers} ${relaybot_RESOURCES_RCC})
+if (QT5_BUILD)
+    qt5_use_modules(relaybot Core)
+endif()
+TARGET_LINK_LIBRARIES(relaybot ircclient ${QT_LIBRARIES})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
